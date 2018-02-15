@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 from __future__ import division
-
-from mlencoders.base_encoder import BaseEncoder
+from __future__ import unicode_literals
 
 import numpy as np
-import pandas as pd
+
+from mlencoders.base_encoder import BaseEncoder
 
 
 class TargetEncoder(BaseEncoder):
