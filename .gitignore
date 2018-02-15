@@ -1,4 +1,5 @@
 /.env
 /.ipynb_checkpoints
+/dist
 *.ipynb
 *.pyc
