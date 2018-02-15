@@ -1,5 +1,7 @@
 # ML Encoders
 
+[![Build Status](https://travis-ci.org/tcassou/mlencoders.svg?branch=master)](https://travis-ci.org/tcassou/mlencoders)
+
 Machine Learning encoders for feature transform and engineering.
 These encoders implement the same API as ML models from `sklearn`, and expose the usual `fit`, `transform` and `fit_transform` methods.
 
