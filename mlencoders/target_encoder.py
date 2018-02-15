@@ -13,10 +13,10 @@ class TargetEncoder(BaseEncoder):
     Target Encoder for categorical features.
     """
 
-    def __init__(self, cols, handle_unseen='impute', min_samples=1, smoothing=1):
+    def __init__(self, cols=None, handle_unseen='impute', min_samples=1, smoothing=1):
         """Instantiation
 
-        :param [str] cols: list of columns to encode
+        :param [str] cols: list of columns to encode, or None (then all dataset columns will be encoded at fitting time)
         :param str handle_unseen:
             'impute' - default value, impute a -1 category
             'error'  - raise an error if a category unseen at fitting time is found
@@ -43,7 +43,10 @@ class TargetEncoder(BaseEncoder):
 
         :return: None
         """
-        assert all(c in X.columns for c in self.cols)
+        if self.cols is None:
+            self.cols = X.columns
+        else:
+            assert all(c in X.columns for c in self.cols)
         assert X.shape[0] == y.shape[0]
 
         self._mean = y.mean()
