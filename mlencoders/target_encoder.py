@@ -20,7 +20,7 @@ class TargetEncoder(BaseEncoder):
             'impute' - default value, impute a -1 category
             'error'  - raise an error if a category unseen at fitting time is found
             'ignore' - skip unseen categories
-        :param int min_samples: minimum samples to take category average into account
+        :param int min_samples: minimum samples to take category average into account, must be >= 1
         :param int smoothing: coefficient used to balance categorical average (posterior) vs prior,
             the higher this number, the higher the prior is taken into account in the average
 
@@ -29,7 +29,7 @@ class TargetEncoder(BaseEncoder):
         super(TargetEncoder, self).__init__()
         self.cols = cols
         self.handle_unseen = handle_unseen
-        self.min_samples = min_samples
+        self.min_samples = max(1, min_samples)
         self.smoothing = smoothing
         self._mapping = {}
         self._mean = None
