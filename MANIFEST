@@ -4,3 +4,4 @@ setup.py
 mlencoders/__init__.py
 mlencoders/base_encoder.py
 mlencoders/target_encoder.py
+mlencoders/weight_of_evidence_encoder.py
