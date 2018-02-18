@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 import numpy as np
 
 from mlencoders.base_encoder import BaseEncoder
+from mlencoders.base_encoder import NAN_CATEGORY
 
 
 class TargetEncoder(BaseEncoder):
@@ -45,15 +46,7 @@ class TargetEncoder(BaseEncoder):
 
         self._imputed = y.mean()
         for col in self.cols:
-            if self.handle_unseen == 'error':
-                if np.isnan(X[col]).sum() > 0:
-                    raise ValueError(
-                        'NaN values found in `{}` column.'
-                        ' Switch to handle_unseen=`impute` to encode them with the target mean, or'
-                        ' handle_unseen=`error` to skip them.'.format(col)
-                    )
-
-            mapping = y.groupby(X[col]).agg(['mean', 'count'])
+            mapping = y.groupby(X[col].fillna(NAN_CATEGORY)).agg(['mean', 'count'])
             corr_count = mapping['count'] - self.min_samples
             coef = (corr_count > 0) / (1 + np.exp(-corr_count / self.smoothing))
             mapping['value'] = self._imputed * (1 - coef) + mapping['mean'] * coef

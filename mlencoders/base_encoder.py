@@ -4,6 +4,8 @@ from __future__ import unicode_literals
 
 import numpy as np
 
+NAN_CATEGORY = -99999
+
 
 class BaseEncoder(object):
 
@@ -31,12 +33,12 @@ class BaseEncoder(object):
 
         X_encoded = X.copy(deep=True)
         for col, mapping in self._mapping.items():
-            X_encoded[col] = mapping['value'].loc[X_encoded[col]].values
+            X_encoded[col] = mapping['value'].loc[X_encoded[col].fillna(NAN_CATEGORY)].values
 
             if self.handle_unseen == 'impute':
                 X_encoded[col].fillna(self._imputed, inplace=True)
             elif self.handle_unseen == 'error':
-                if np.unique(X_encoded[col]).shape > mapping.shape[0]:
+                if np.unique(X_encoded[col]).shape[0] > mapping.shape[0]:
                     raise ValueError('Unseen categories found in `{}` column.'.format(col))
 
         return X_encoded

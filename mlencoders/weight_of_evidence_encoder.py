@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 import numpy as np
 
 from mlencoders.base_encoder import BaseEncoder
+from mlencoders.base_encoder import NAN_CATEGORY
 
 
 class WeightOfEvidenceEncoder(BaseEncoder):
@@ -47,16 +48,8 @@ class WeightOfEvidenceEncoder(BaseEncoder):
         assert X.shape[0] == y.shape[0]
 
         for col in self.cols:
-            if self.handle_unseen == 'error':
-                if np.isnan(X[col]).sum() > 0:
-                    raise ValueError(
-                        'NaN values found in `{}` column.'
-                        ' Switch to handle_unseen=`impute` to encode them with default value, or'
-                        ' handle_unseen=`error` to skip them.'.format(col)
-                    )
-
             # Share of positive (resp. negative) labels for each category P(X=X_i | Y=1) (resp. P(X=X_i | Y=0))
-            mapping = y.groupby(X[col]).agg(['sum', 'count']).rename({'sum': 'pos'}, axis=1)
+            mapping = y.groupby(X[col].fillna(NAN_CATEGORY)).agg(['sum', 'count']).rename({'sum': 'pos'}, axis=1)
             mapping['neg'] = mapping['count'] - mapping['pos']
             mapping[['pos', 'neg']] /= mapping[['pos', 'neg']].sum()
             # For corner cases, defaulting to WOE = 0 (meaning no info). To avoid division by 0 we use default values.
