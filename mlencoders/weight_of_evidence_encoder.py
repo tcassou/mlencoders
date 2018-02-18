@@ -14,7 +14,7 @@ class WeightOfEvidenceEncoder(BaseEncoder):
     For a categorical variable X, with possible values X_i, i=1..n, and target binary variable Y,
     it is defined as
 
-        WOE_i = ln[ P(X=X_i | Y=1) / P(X=X_i | Y=0)]
+        WOE_i = ln[ P(X=X_i | Y=1) / P(X=X_i | Y=0) ]
 
     """
 
@@ -26,16 +26,11 @@ class WeightOfEvidenceEncoder(BaseEncoder):
             'impute' - default value, impute a -1 category
             'error'  - raise an error if a category unseen at fitting time is found
             'ignore' - skip unseen categories
-        :param int min_samples: minimum samples to take category average into account, must be >= 1
+        :param int min_samples: minimum samples to compute WOE of category, must be >= 1.
 
         :return: None
         """
-        super(WeightOfEvidenceEncoder, self).__init__()
-        self.cols = cols
-        self.handle_unseen = handle_unseen
-        self.min_samples = max(1, min_samples)
-        self._mapping = {}
-        self._default = 0
+        super(WeightOfEvidenceEncoder, self).__init__(cols, handle_unseen, min_samples, 0)
 
     def fit(self, X, y):
         """Encode given columns of X according to y.
@@ -68,30 +63,5 @@ class WeightOfEvidenceEncoder(BaseEncoder):
             undef = (mapping['count'] < self.min_samples) | (mapping['pos'] == 0) | (mapping['neg'] == 0)
             mapping.loc[undef, ['pos', 'neg']] = -1
             # Final step, log of ratio of probabily estimates
-            mapping['woe'] = np.log(mapping['pos'] / mapping['neg'])
+            mapping['value'] = np.log(mapping['pos'] / mapping['neg'])
             self._mapping[col] = mapping
-
-    def transform(self, X):
-        """Transform categorical data based on mapping learnt at fitting time.
-
-        :param pandas.DataFrame X: DataFrame of features, shape (n_samples, n_features). Must contain columns to encode.
-
-        :return: encoded DataFrame of shape (n_samples, n_features), initial categorical columns are dropped, and
-            replaced with encoded columns. DataFrame passed in argument is unchanged.
-        :rtype: pandas.DataFrame
-        """
-        if not self._mapping:
-            raise ValueError('`fit` method must be called before `transform`.')
-        assert all(c in X.columns for c in self.cols)
-
-        X_encoded = X.copy(deep=True)
-        for col, mapping in self._mapping.items():
-            X_encoded[col] = mapping['woe'].loc[X_encoded[col]].values
-
-            if self.handle_unseen == 'impute':
-                X_encoded[col].fillna(self._default, inplace=True)
-            elif self.handle_unseen == 'error':
-                if np.unique(X_encoded[col]).shape > mapping.shape[0]:
-                    raise ValueError('Unseen categories found in `{}` column.'.format(col))
-
-        return X_encoded

@@ -26,13 +26,8 @@ class TargetEncoder(BaseEncoder):
 
         :return: None
         """
-        super(TargetEncoder, self).__init__()
-        self.cols = cols
-        self.handle_unseen = handle_unseen
-        self.min_samples = max(1, min_samples)
+        super(TargetEncoder, self).__init__(cols, handle_unseen, min_samples, None)
         self.smoothing = smoothing
-        self._mapping = {}
-        self._mean = None
 
     def fit(self, X, y):
         """Encode given columns of X according to y.
@@ -48,7 +43,7 @@ class TargetEncoder(BaseEncoder):
             assert all(c in X.columns for c in self.cols)
         assert X.shape[0] == y.shape[0]
 
-        self._mean = y.mean()
+        self._imputed = y.mean()
         for col in self.cols:
             if self.handle_unseen == 'error':
                 if np.isnan(X[col]).sum() > 0:
@@ -61,30 +56,5 @@ class TargetEncoder(BaseEncoder):
             mapping = y.groupby(X[col]).agg(['mean', 'count'])
             corr_count = mapping['count'] - self.min_samples
             coef = (corr_count > 0) / (1 + np.exp(-corr_count / self.smoothing))
-            mapping['smooth'] = self._mean * (1 - coef) + mapping['mean'] * coef
+            mapping['value'] = self._imputed * (1 - coef) + mapping['mean'] * coef
             self._mapping[col] = mapping
-
-    def transform(self, X):
-        """Transform categorical data based on mapping learnt at fitting time.
-
-        :param pandas.DataFrame X: DataFrame of features, shape (n_samples, n_features). Must contain columns to encode.
-
-        :return: encoded DataFrame of shape (n_samples, n_features), initial categorical columns are dropped, and
-            replaced with encoded columns. DataFrame passed in argument is unchanged.
-        :rtype: pandas.DataFrame
-        """
-        if not self._mapping:
-            raise ValueError('`fit` method must be called before `transform`.')
-        assert all(c in X.columns for c in self.cols)
-
-        X_encoded = X.copy(deep=True)
-        for col, mapping in self._mapping.items():
-            X_encoded[col] = mapping['smooth'].loc[X_encoded[col]].values
-
-            if self.handle_unseen == 'impute':
-                X_encoded[col].fillna(self._mean, inplace=True)
-            elif self.handle_unseen == 'error':
-                if np.unique(X_encoded[col]).shape > mapping.shape[0]:
-                    raise ValueError('Unseen categories found in `{}` column.'.format(col))
-
-        return X_encoded
