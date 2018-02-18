@@ -2,16 +2,22 @@
 from distutils.core import setup
 
 
-version = '1.0.1'
+version = '1.1.1'
 
 setup(
     name='mlencoders',
     packages=['mlencoders'],
     version=version,
-    description='Machine Learning encoders for feature transform and engineering.',
+    description='''
+        Machine Learning encoders for feature transformation & engineering: target encoder, weight of evidence.
+    ''',
     url='https://github.com/tcassou/mlencoders',
     download_url='https://github.com/tcassou/mlencoders/archive/{}.tar.gz'.format(version),
-    keywords=['machine', 'learning', 'encoder', 'python', 'feature', 'transform', 'engineering'],
+    keywords=[
+        'machine', 'learning', 'encoder', 'python',
+        'feature', 'transform', 'engineering',
+        'target', 'likelihood', 'weight', 'evidence',
+        ],
     classifiers=[
         'Programming Language :: Python',
         'Intended Audience :: Developers',
