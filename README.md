@@ -5,6 +5,10 @@
 Machine Learning encoders for feature transform and engineering.
 These encoders implement the same API as ML models from `sklearn`, and expose the usual `fit`, `transform` and `fit_transform` methods.
 
+Available encoders:
+* Target Encoder (a.k.a. likelihood encoder, or mean encoder)
+* Weight of Evidence
+
 ## Setup
 
 Simply install from `pip`:
@@ -26,15 +30,28 @@ See the following example to observe how the categorical variables are transform
 
 ```python
 from sklearn.datasets import load_boston
-
+from mlencoders.target_encoder import TargetEncoder
 import pandas as pd
-import numpy as np
 
 boston = load_boston()
 y = pd.Series(boston.target)
 X = pd.DataFrame(boston.data, columns=boston.feature_names)
 
 enc = TargetEncoder(cols=['CHAS', 'RAD'])
+X_encoded = enc.fit_transform(X, y)
+```
+
+### Weight of Evidence
+See [this nice article](https://multithreaded.stitchfix.com/blog/2015/08/13/weight-of-evidence/) to learn about **Information Value (IV)** and **Weight of Evidence (WOE)**.
+
+For a task with a binary target `Y` (e.g. binary classification), allows to encode categorical features `X` into a continuous value `WOE = log[ P(X=X_i | Y=1) / P(X=X_i | Y=0) ]`.
+
+```python
+... # load the same dataset as above
+
+from mlencoders.weight_of_evidence_encoder import WeightOfEvidenceEncoder
+
+enc = WeightOfEvidenceEncoder(cols=['CHAS', 'RAD'])
 X_encoded = enc.fit_transform(X, y)
 ```
 
