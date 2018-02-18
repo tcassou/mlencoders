@@ -2,6 +2,8 @@
 from __future__ import division
 from __future__ import unicode_literals
 
+import cPickle as pickle
+
 import numpy as np
 
 NAN_CATEGORY = -99999
@@ -62,3 +64,12 @@ class BaseEncoder(object):
         else:
             assert all(c in X.columns for c in self.cols)
         assert X.shape[0] == y.shape[0]
+
+    def save_as_object_file(self, path):
+        if not self._mapping:
+            raise ValueError('`fit` method must be called before `save_as_object_file`.')
+        pickle.dump(self.__dict__, open(path, 'wb'))
+
+    def load_from_object_file(self, path):
+        for k, v in pickle.load(open(path, 'rb')).items():
+            setattr(self, k, v)

@@ -57,6 +57,23 @@ X_encoded = enc.fit_transform(X, y)
 
 ### More to come!
 
+## Saving encoder state
+In case you are planning to fit your encoders offline, and use them online at prediction time, you can easily save their state in a file and load it later on.
+
+```python
+# Offilne: fitting the encoder to data (X, y) and storing state
+...
+enc = TargetEncoder(some, parameters)
+enc.fit(X, y)
+enc.save_as_object_file('your_file_name')
+
+# Online: loading your encoder and encoding new data X_new
+...
+enc = TargetEncoder()   # no parameters are needed here, they will be loaded automatically
+enc.load_from_object_file('your_file_name')
+enc.transform(X_new)
+```
+
 ## Requirements
 
 * `pandas >= 0.22.0`
