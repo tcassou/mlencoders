@@ -41,12 +41,7 @@ class WeightOfEvidenceEncoder(BaseEncoder):
 
         :return: None
         """
-        if self.cols is None:
-            self.cols = X.columns
-        else:
-            assert all(c in X.columns for c in self.cols)
-        assert X.shape[0] == y.shape[0]
-
+        self._before_fit_check(X, y)
         for col in self.cols:
             # Share of positive (resp. negative) labels for each category P(X=X_i | Y=1) (resp. P(X=X_i | Y=0))
             mapping = y.groupby(X[col].fillna(NAN_CATEGORY)).agg(['sum', 'count']).rename({'sum': 'pos'}, axis=1)

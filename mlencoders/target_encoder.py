@@ -38,12 +38,7 @@ class TargetEncoder(BaseEncoder):
 
         :return: None
         """
-        if self.cols is None:
-            self.cols = X.columns
-        else:
-            assert all(c in X.columns for c in self.cols)
-        assert X.shape[0] == y.shape[0]
-
+        self._before_fit_check(X, y)
         self._imputed = y.mean()
         for col in self.cols:
             mapping = y.groupby(X[col].fillna(NAN_CATEGORY)).agg(['mean', 'count'])

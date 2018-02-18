@@ -55,3 +55,10 @@ class BaseEncoder(object):
         """
         self.fit(X, y)
         return self.transform(X)
+
+    def _before_fit_check(self, X, y):
+        if self.cols is None:
+            self.cols = X.columns
+        else:
+            assert all(c in X.columns for c in self.cols)
+        assert X.shape[0] == y.shape[0]
