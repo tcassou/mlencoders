@@ -2,7 +2,7 @@
 from distutils.core import setup
 
 
-version = '1.1.1'
+version = '1.1.0'
 
 setup(
     name='mlencoders',
