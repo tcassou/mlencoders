@@ -1,4 +1,4 @@
-/.env
+/.env*
 /.ipynb_checkpoints
 /dist
 *.ipynb

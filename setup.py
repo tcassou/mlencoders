@@ -2,7 +2,7 @@
 from distutils.core import setup
 
 
-version = '1.2.0'
+version = '1.2.1'
 
 setup(
     name='mlencoders',
@@ -22,6 +22,7 @@ setup(
         'Programming Language :: Python',
         'Intended Audience :: Developers',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.6',
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
         'Topic :: Scientific/Engineering :: Mathematics',
     ],
