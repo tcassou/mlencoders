@@ -33,6 +33,12 @@ class WeightOfEvidenceEncoderTest(unittest.TestCase):
         eq_(enc._imputed, 0)
         eq_(enc._mapping, {})
 
+    @genty_dataset(
+        typo=('ignores',),
+    )
+    def test_init_wrong_input(self, handle_unseen):
+        assert_raises(ValueError, WeightOfEvidenceEncoder, None, handle_unseen)
+
     def test_transform_before_fit(self):
         enc = WeightOfEvidenceEncoder()
         assert_raises(ValueError, enc.transform, 1)

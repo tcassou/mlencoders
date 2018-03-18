@@ -34,6 +34,12 @@ class TargetEncoderTest(unittest.TestCase):
         eq_(enc._imputed, None)
         eq_(enc._mapping, {})
 
+    @genty_dataset(
+        typo=('ignores',),
+    )
+    def test_init_wrong_input(self, handle_unseen):
+        assert_raises(ValueError, TargetEncoder, None, handle_unseen)
+
     def test_transform_before_fit(self):
         enc = TargetEncoder()
         assert_raises(ValueError, enc.transform, 1)

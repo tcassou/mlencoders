@@ -51,11 +51,12 @@ class BaseEncoder(object):
 
         return X_encoded
 
-    def fit_transform(self, X, y):
+    def fit_transform(self, X, y=None):
         """Encode given columns of X according to y, and transform X based on the learnt mapping.
 
         :param pandas.DataFrame X: DataFrame of features, shape (n_samples, n_features). Must contain columns to encode.
         :param pandas.Series y: pandas Series of target values, shape (n_samples,).
+            Required only for encoders that need it: TargetEncoder, WeightOfEvidenceEncoder
 
         :return: encoded DataFrame of shape (n_samples, n_features), initial categorical columns are dropped, and
             replaced with encoded columns. DataFrame passed in argument is unchanged.
@@ -64,12 +65,20 @@ class BaseEncoder(object):
         self.fit(X, y)
         return self.transform(X)
 
+    def _input_check(self, name, value, options):
+        if value not in options:
+            raise ValueError('Wrong input: {} parameter must be in {}'.format(name, options))
+
     def _before_fit_check(self, X, y):
+        # Checking columns to encode
         if self.cols is None:
             self.cols = X.columns
         else:
             assert all(c in X.columns for c in self.cols)
-        assert X.shape[0] == y.shape[0]
+        # Checking input, depending on encoder type
+        assert self.__class__.__name__ == 'LabelEncoder' or y is not None
+        if y is not None:
+            assert X.shape[0] == y.shape[0]
 
     def save_as_object_file(self, path):
         if not self._mapping:

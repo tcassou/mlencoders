@@ -33,6 +33,7 @@ class WeightOfEvidenceEncoder(BaseEncoder):
 
         :return: None
         """
+        self._input_check('handle_unseen', handle_unseen, ['impute', 'error', 'ignore'])
         super(WeightOfEvidenceEncoder, self).__init__(cols, handle_unseen, min_samples, 0)
 
     def fit(self, X, y):
