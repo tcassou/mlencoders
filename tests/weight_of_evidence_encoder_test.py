@@ -72,15 +72,16 @@ class WeightOfEvidenceEncoderTest(unittest.TestCase):
         assert_array_equal(enc._mapping['cat'].columns, ['pos', 'count', 'neg', 'value'])
 
     @genty_dataset(
-        impute=(['a', 'a', 'b', 'b'], [1, 1, 0, 1], 'impute', [0, 0, -1.099, -1.099]),
-        ignore=(['a', 'a', 'b', 'b'], [1, 1, 0, 1], 'ignore', [np.nan, 0, -1.099, -1.099]),
+        impute=(['a', 'a', 'b', 'b'], [1, 1, 0, 1], ['foo', 'a', 'b'], 'impute', [0, 0, -1.099]),
+        impute_all=(['a', 'a', 'b', 'b'], [1, 1, 0, 1], ['foo', 'foo', 'foo'], 'impute', [0, 0, 0]),
+        ignore=(['a', 'a', 'b', 'b'], [1, 1, 0, 1], ['foo', 'a', 'b'], 'ignore', [np.nan, 0, -1.099]),
+        ignore_all=(['a', 'a', 'b', 'b'], [1, 1, 0, 1], ['foo', 'foo', 'foo'], 'ignore', [np.nan, np.nan, np.nan]),
     )
-    def test_transform_unseen(self, X, y, handle_unseen, expected):
+    def test_transform_unseen(self, X, y, Z, handle_unseen, expected):
         enc = WeightOfEvidenceEncoder(cols=['cat'], handle_unseen=handle_unseen)
         X = pd.DataFrame(X, columns=['cat'])
         enc.fit(X, pd.Series(y))
-        X.iloc[0, 0] = 'foo'
-        result = enc.transform(X)
+        result = enc.transform(pd.DataFrame(Z, columns=['cat']))
         assert_array_almost_equal(result, pd.DataFrame(expected), decimal=3)
 
     @genty_dataset(
