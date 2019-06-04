@@ -8,6 +8,7 @@ These encoders implement the same API as ML models from `sklearn`, and expose th
 Available encoders:
 * Target Encoder (a.k.a. likelihood encoder, or mean encoder)
 * Weight of Evidence
+* Label Encoder
 
 ## Setup
 
